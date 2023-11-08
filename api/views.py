@@ -5,6 +5,7 @@ from rest_framework.decorators import APIView
 from . import models
 from . import serializers
 from django.contrib.auth.hashers import make_password, check_password
+from rest_framework.authtoken.models import Token
 
 
 class Signup(APIView):
@@ -28,3 +29,32 @@ class Signup(APIView):
             return Response({'status': 'success', 'message': 'signup successful.'}, status=status.HTTP_201_CREATED)
         return Response({'status': 'failed request', 'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+class Login(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def post(self, request):
+        serializer = serializers.UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data.get('email')
+            password = serializer.validated_data.get('password')
+            try:
+                user = models.User.objects.get(email=email)
+            except models.User.DoesNotExist:
+                user=None
+            if user is not None and check_password(password, user.password):
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({
+                    'status': 'success',
+                    'message': 'login successful',
+                    'access_token': token.key,
+                    'user': {
+                        'id': user.id,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'username': user.username,
+                        'email': user.email,
+                        'phone_number': user.phone_number
+                    }
+                }, status=status.HTTP_200_OK)
+            return Response({'status': 'failed request', 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({'status': 'failed request', 'message': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)

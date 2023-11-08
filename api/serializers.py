@@ -14,5 +14,5 @@ class UserSignupSerializer(serializers.ModelSerializer):
         ]
 
 class UserLoginSerializer(serializers.ModelSerializer):
-    username = serializers.CharField()
+    email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
