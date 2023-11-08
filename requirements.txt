@@ -1,0 +1,6 @@
+Django>=4.1.10
+djangorestframework
+djangorestframework-simplejwt
+requests
+django-cors-headers
+mysqlclient
