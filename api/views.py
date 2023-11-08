@@ -19,9 +19,9 @@ class Signup(APIView):
             username = serializer.validated_data.get('username')
             email = serializer.validated_data.get('email')
             phone_number = serializer.validated_data.get('phone_number')
-            password = serializer.validated_data.get('password')
+            raw_password = serializer.validated_data.get('password')
             # hash user password
-            hashed_password = make_password(password)
+            hashed_password = make_password(raw_password)
             user_exists = models.User.objects.filter(email=email)
             if user_exists:
                 return Response({'status': 'Bad request', 'message': 'User with this email already exists'}, status=status.HTTP_400_BAD_REQUEST)
@@ -56,5 +56,10 @@ class Login(APIView):
                         'phone_number': user.phone_number
                     }
                 }, status=status.HTTP_200_OK)
-            return Response({'status': 'failed request', 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({
+                'status': 'failed request', 
+                'message': 'Invalid credentials', 
+                'email': user.email, 
+                'password': password, 
+                'hashed_password': user.password}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'status': 'failed request', 'message': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
