@@ -6,6 +6,8 @@ from . import models
 from . import serializers
 from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.authtoken.models import Token
+from .authentication import TokenAuthentication
+from .permissions import IsAdminUserOrReadOnly
 
 
 class Signup(APIView):
@@ -57,9 +59,9 @@ class Login(APIView):
                     }
                 }, status=status.HTTP_200_OK)
             return Response({
-                'status': 'failed request', 
-                'message': 'Invalid credentials', 
-                'email': user.email, 
-                'password': password, 
-                'hashed_password': user.password}, status=status.HTTP_401_UNAUTHORIZED)
+                'status': 'failed request', 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'status': 'failed request', 'message': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class Electricity_plan(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = []
