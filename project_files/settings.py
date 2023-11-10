@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'project_files.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'electricity_consumption_system',
+        'NAME': 'group_5_wpecs',
         'HOST': '127.0.0.1',
         'PORT': '3306',
         'USER': 'root',
