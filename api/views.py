@@ -8,7 +8,8 @@ from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.authtoken.models import Token
 from .authentication import TokenAuthentication
 from .permissions import IsAdminUserOrReadOnly
-
+from rest_framework.permissions import IsAuthenticated
+import json
 
 class Signup(APIView):
     authentication_classes = []
@@ -61,9 +62,19 @@ class Login(APIView):
             return Response({
                 'status': 'failed request', 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'status': 'failed request', 'message': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-class Electricity_plan(APIView):
+
+class Create_Electricity_Plan(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAdminUserOrReadOnly]
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     def post(self, request):
-        pass
+        serializer = serializers.Electricity_plan_serializer(data=request.data)
+        if serializer.is_valid():
+            plan_name = serializer.validated_data.get('name')
+            plan_description = serializer.validated_data.get('description')
+            validity_period = serializer.validated_data.get('validity_period')
+            # calculate electricity price
+            pricing_detail = models.Electricity_Plan.calculate_electricity_plan_price(validity_period)
+            serializer.save(electricity_plan_price = pricing_detail)
+            return Response({'status': 'success', 'message': 'new electricity plan has been created'}, status=status.HTTP_201_CREATED)
+        return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+

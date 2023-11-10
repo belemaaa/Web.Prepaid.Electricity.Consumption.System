@@ -17,3 +17,13 @@ class UserSignupSerializer(serializers.ModelSerializer):
 class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
+
+class Electricity_plan_serializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Electricity_Plan
+        fields = [
+            'name',
+            'description',
+            'validity_period',
+            'electricity_plan_price'
+        ]

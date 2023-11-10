@@ -6,18 +6,16 @@ class User(AbstractUser):
     phone_number = models.CharField(max_length=20)
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
-    
-class Pricing_Detail(models.Model):
-    base_price = models.DecimalField(max_digits=10, default='0.00', decimal_places=2)
-    validity_period = models.CharField(max_length=255, null=True, blank=True)
-    def calculate_price(self):
-        self.base_price = 500
-        electricity_plan_price = self.base_price * self.validity_period
-        return electricity_plan_price
 
 class Electricity_Plan(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    pricing_detail = models.OneToOneField(Pricing_Detail, on_delete=models.SET_NULL, null=True)
+    description = models.CharField(max_length=500, null=True, blank=True)
+    validity_period = models.CharField(max_length=50, null=True, blank=True)
+    electricity_plan_price = models.DecimalField(max_digits=10, decimal_places=2, default='0.00')
+    def calculate_electricity_plan_price(self, validity_period):
+        base_price = 500
+        price = base_price * validity_period
+        return f"Price for {validity_period} days validity period - N{price}" 
     def __str__(self):
         return f'{self.name}'
     
