@@ -64,4 +64,6 @@ class Login(APIView):
     
 class Electricity_plan(APIView):
     authentication_classes = [TokenAuthentication]
-    permission_classes = []
+    permission_classes = [IsAdminUserOrReadOnly]
+    def post(self, request):
+        pass

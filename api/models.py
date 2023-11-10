@@ -10,6 +10,10 @@ class User(AbstractUser):
 class Pricing_Detail(models.Model):
     base_price = models.DecimalField(max_digits=10, default='0.00', decimal_places=2)
     validity_period = models.CharField(max_length=255, null=True, blank=True)
+    def calculate_price(self):
+        self.base_price = 500
+        electricity_plan_price = self.base_price * self.validity_period
+        return electricity_plan_price
 
 class Electricity_Plan(models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
