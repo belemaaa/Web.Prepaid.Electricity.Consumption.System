@@ -86,15 +86,15 @@ class Create_Electricity_Plan(APIView):
         if serializer.is_valid():
             plan_name = serializer.validated_data.get('name')
             plan_description = serializer.validated_data.get('description')
-            validity_period = serializer.validated_data.get('validity_period')
+            number_of_units = serializer.validated_data.get('number_of_units')
             # Create an instance of Electricity_Plan
             electricity_plan = models.Electricity_Plan()
-            pricing_detail = electricity_plan.calculate_price(validity_period)
+            pricing_detail = electricity_plan.calculate_price(number_of_units)
             # Save the electricity plan with the calculated price
             electricity_plan.name = plan_name
             electricity_plan.description = plan_description
-            electricity_plan.validity_period = validity_period
-            electricity_plan.electricity_plan_price = pricing_detail
+            electricity_plan.number_of_units = number_of_units
+            electricity_plan.price = pricing_detail
             electricity_plan.save()
             return Response({'status': 'success', 'message': 'new electricity plan has been created'}, status=status.HTTP_201_CREATED)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
