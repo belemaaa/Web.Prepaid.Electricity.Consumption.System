@@ -27,3 +27,14 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
             'validity_period',
             'electricity_plan_price'
         ]
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.User
+        fields = [
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'phone_number'
+        ]
