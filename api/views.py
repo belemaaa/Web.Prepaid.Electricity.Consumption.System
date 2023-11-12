@@ -63,6 +63,21 @@ class Login(APIView):
                 'status': 'failed request', 'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({'status': 'failed request', 'message': 'User does not exist.'}, status=status.HTTP_400_BAD_REQUEST)
 
+class Profile(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = models.User.objects.get(user=request.user)
+        return Response({
+            'status': 'success',
+            'data': {
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'username': user.username,
+                'email': user.email,
+                'phone_number': user.phone_number
+            }}, status=status.HTTP_200_OK)
+
 class Create_Electricity_Plan(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
@@ -74,7 +89,7 @@ class Create_Electricity_Plan(APIView):
             validity_period = serializer.validated_data.get('validity_period')
             # Create an instance of Electricity_Plan
             electricity_plan = models.Electricity_Plan()
-            pricing_detail = electricity_plan.calculate_electricity_plan_price(validity_period)
+            pricing_detail = electricity_plan.calculate_price(validity_period)
             # Save the electricity plan with the calculated price
             electricity_plan.name = plan_name
             electricity_plan.description = plan_description
