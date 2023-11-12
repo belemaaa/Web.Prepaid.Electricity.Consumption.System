@@ -24,8 +24,8 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
         fields = [
             'name',
             'description',
-            'validity_period',
-            'electricity_plan_price'
+            'number_of_unity',
+            'price'
         ]
 
 # class ProfileSerializer(serializers.ModelSerializer):

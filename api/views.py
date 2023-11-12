@@ -78,7 +78,7 @@ class Profile(APIView):
                 'phone_number': user.phone_number
             }}, status=status.HTTP_200_OK)
 
-class Create_Electricity_Plan(APIView):
+class Electricity_Plan(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     def post(self, request):
@@ -98,4 +98,7 @@ class Create_Electricity_Plan(APIView):
             electricity_plan.save()
             return Response({'status': 'success', 'message': 'new electricity plan has been created'}, status=status.HTTP_201_CREATED)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
+    def get(self, request):
+        queryset = models.Electricity_Plan.objects.all()
+        serializer = serializers.Electricity_plan_serializer(queryset, many=True)
+        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
