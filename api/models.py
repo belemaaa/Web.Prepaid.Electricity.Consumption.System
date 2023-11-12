@@ -33,5 +33,10 @@ class Paid_plan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     electricity_plan = models.ForeignKey(Electricity_Plan, on_delete=models.CASCADE)
 
-
-
+class Payment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    electricity_plan = models.ForeignKey(Electricity_Plan, on_delete=models.CASCADE)
+    card_holder_name = models.CharField(max_length=255)
+    card_number = models.DateField()
+    cvv = models.CharField(max_length=3)
+    amount_to_pay = models.CharField(max_length=50)

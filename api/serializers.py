@@ -6,6 +6,7 @@ class UserSignupSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.User
         fields = [
+            'id',
             'first_name',
             'last_name',
             'username',
@@ -22,6 +23,7 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
     class Meta:
         model = models.Electricity_Plan
         fields = [
+            'id',
             'name',
             'description',
             'number_of_unity',
@@ -38,3 +40,14 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
 #             'email',
 #             'phone_number'
 #         ]
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Payment
+        fields = [
+            'card_holder_name',
+            'card_number',
+            'card_date',
+            'cvv',
+            'user'
+        ]

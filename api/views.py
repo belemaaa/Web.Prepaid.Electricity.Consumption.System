@@ -102,3 +102,14 @@ class Electricity_Plan(APIView):
         queryset = models.Electricity_Plan.objects.all()
         serializer = serializers.Electricity_plan_serializer(queryset, many=True)
         return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+
+class Payment(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def post(self, request, plan_id):
+        serializer = serializers.PaymentSerializer(data=request.data)
+        if serializer.is_valid():
+            card_holder_name = serializer.validated_data.get('card_holder_name')
+            card_number = serializer.validated_data.get('card_number')
+            card_date = serializer.validated_data.get('card_date')
+            cvv = serializer.validated_data.get('cvv')
