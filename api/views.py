@@ -11,6 +11,7 @@ from .permissions import IsAdminUserOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 import json
 import random
+from datetime import timedelta, timezone
 
 class Signup(APIView):
     authentication_classes = []
@@ -107,8 +108,10 @@ class Electricity_Plan(APIView):
 class Payment(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
-    def generate_pin(self):
-        return str(random.randint(100000000000000, 999999999999999))
+    def generate_pin(self, validity_days):
+        expiration_date = timezone.now() + timedelta(days=validity_days)
+        pin = str(random.randint(100000000000000, 999999999999999))
+        return pin, expiration_date
     def post(self, request, plan_id):
         serializer = serializers.PaymentSerializer(data=request.data)
         user = models.User.objects.get(user=request.user)
@@ -132,7 +135,8 @@ class Payment(APIView):
 
             # generate electricity pin for the selected plan
             electricity_pin = models.Electricity_Pin()
-            electricity_pin.pin = self.generate_pin()
+            electricity_pin.pin, expiration_date = self.generate_pin(number_of_units * 2)
+            electricity_pin.expiration_date = expiration_date
             electricity_pin.user = user
             electricity_pin.electricity_plan = electricity_plan
             electricity_pin.is_valid = True
