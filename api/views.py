@@ -114,7 +114,7 @@ class Payment(APIView):
         return pin, expiration_date
     def post(self, request, plan_id):
         serializer = serializers.PaymentSerializer(data=request.data)
-        user = models.User.objects.get(user=request.user)
+        user = request.user
         if serializer.is_valid():
             card_holder_name = serializer.validated_data.get('card_holder_name')
             card_number = serializer.validated_data.get('card_number')
@@ -163,3 +163,12 @@ class Payment(APIView):
                     'price': price
                 }}, status=status.HTTP_200_OK)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+class Retrieve_Paid_Plans(APIView):
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user=request.user
+        queryset = models.Paid_plan.objects.get(user=user)
+        serializer = serializers.PaidPlanSerializer(queryset, many=True)
+        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)

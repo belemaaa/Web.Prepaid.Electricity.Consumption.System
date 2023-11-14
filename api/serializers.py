@@ -51,3 +51,10 @@ class PaymentSerializer(serializers.ModelSerializer):
             'cvv',
             'user'
         ]
+
+class PaidPlanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Paid_plan
+        fields = [
+            'user'
+        ]
