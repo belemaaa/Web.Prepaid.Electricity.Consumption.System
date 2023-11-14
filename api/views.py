@@ -10,6 +10,7 @@ from .authentication import TokenAuthentication
 from .permissions import IsAdminUserOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 import json
+import random
 
 class Signup(APIView):
     authentication_classes = []
@@ -106,10 +107,28 @@ class Electricity_Plan(APIView):
 class Payment(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
+    def generate_pin(self):
+        return str(random.randint(100000000000000, 999999999999999))
     def post(self, request, plan_id):
         serializer = serializers.PaymentSerializer(data=request.data)
+        user = request.user
         if serializer.is_valid():
             card_holder_name = serializer.validated_data.get('card_holder_name')
             card_number = serializer.validated_data.get('card_number')
-            card_date = serializer.validated_data.get('card_date')
+            card_expiry_date = serializer.validated_data.get('card_expiry_date')
             cvv = serializer.validated_data.get('cvv')
+            address = serializer.validated_data.get('address')
+            phone_number = serializer.validated_data.get('phone_number')
+            meter_id = serializer.validated_data.get('meter_id')
+            try:
+                electricity_plan = models.Electricity_Plan.objects.get(id=plan_id)
+            except models.Electricity_Plan.DoesNotExist:
+                electricity_plan = None
+                return Response({'status': 'failed request', 'message': 'Plan id not found.'}, status=status.HTTP_404_NOT_FOUND)
+            serializer.save(user=user, electricity_plan=electricity_plan)
+            # generate electricity pin for the selected plan
+            electricity_pin = models.Electricity_Pin()
+            electricity_pin.pin = self.generate_pin()
+            electricity_pin.user = user
+            electricity_pin.electricity_plan = electricity_plan
+            electricity_pin.is_valid = True
