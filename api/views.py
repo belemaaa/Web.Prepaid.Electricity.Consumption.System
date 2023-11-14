@@ -172,3 +172,13 @@ class Retrieve_Paid_Plans(APIView):
         queryset = models.Paid_plan.objects.get(user=user)
         serializer = serializers.PaidPlanSerializer(queryset, many=True)
         return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+    
+class Consumption_Reader(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self, request):
+        user = request.user
+        consumption_reader, created = models.ConsumptionReader.objects.get_or_create(user=user)
+        consumption_reader.update_consumption_data()
+        serializer = serializers.ConsumptionReaderSerializer(consumption_reader)
+        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)

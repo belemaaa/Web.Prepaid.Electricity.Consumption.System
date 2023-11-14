@@ -34,29 +34,26 @@ class ConsumptionReader(models.Model):
     percentage_consumed = models.FloatField()
 
     def update_consumption_data(self):
-        # Get all active electricity plans for the user
+        # get all active electricity plans for the user
         active_plans = Electricity_Pin.objects.filter(
             user=self.user,
             is_valid=True,
             expiration_date__gte=timezone.now()
         ).values_list('electricity_plan__number_of_units', flat=True)
-        # Calculate remaining validity days
+        # calculate remaining validity days
         min_expiration_date = min(Electricity_Pin.objects.filter(
             user=self.user,
             is_valid=True
         ).values_list('expiration_date', flat=True), default=timezone.now())
         self.remaining_validity_days = max((min_expiration_date - timezone.now()).days, 0)
-
-        # Calculate total and consumed units
+        # calculate total and consumed units
         total_units = sum(active_plans)
         consumed_units = Electricity_Pin.objects.filter(
             user=self.user,
             is_valid=True
         ).aggregate(models.Sum('number_of_units'))['number_of_units__sum'] or 0
-
-        # Calculate percentage consumed
+        # calculate percentage consumed
         self.percentage_consumed = (consumed_units / total_units) * 100 if total_units > 0 else 0
-
         self.save()
 
 class Paid_plan(models.Model):

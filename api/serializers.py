@@ -53,8 +53,33 @@ class PaymentSerializer(serializers.ModelSerializer):
         ]
 
 class PaidPlanSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+    electricity_plan = serializers.SerializerMethodField()
     class Meta:
         model = models.Paid_plan
-        fields = [
-            'user'
-        ]
+        fields = ['user', 'electricity_plan']
+
+    def get_user(self, obj):
+        return {
+            'id': obj.id,
+            'first_name': obj.first_name,
+            'last_name': obj.last_name,
+            'username': obj.username,
+            'email': obj.email,
+            'phone_number': obj.phone_number
+        }
+    def get_electricity_plan(self, obj):
+        return {
+            'name': obj.electricity_plan.name,
+            'description': obj.electricity_plan.description,
+            'number_of_units': obj.electricity_plan.number_of_units,
+            'price': obj.electricity_plan.price,
+        }
+
+class ConsumptionReaderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.ConsumptionReader
+        fields = ['user', 'remaining_validity_days', 'percentage_consumed']
+
+
+
