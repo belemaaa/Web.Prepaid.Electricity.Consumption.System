@@ -111,7 +111,7 @@ class Payment(APIView):
         return str(random.randint(100000000000000, 999999999999999))
     def post(self, request, plan_id):
         serializer = serializers.PaymentSerializer(data=request.data)
-        user = request.user
+        user = models.User.objects.get(user=request.user)
         if serializer.is_valid():
             card_holder_name = serializer.validated_data.get('card_holder_name')
             card_number = serializer.validated_data.get('card_number')
@@ -122,13 +122,40 @@ class Payment(APIView):
             meter_id = serializer.validated_data.get('meter_id')
             try:
                 electricity_plan = models.Electricity_Plan.objects.get(id=plan_id)
+                if electricity_plan:
+                    number_of_units = electricity_plan.number_of_units
+                    price = electricity_plan.price
             except models.Electricity_Plan.DoesNotExist:
                 electricity_plan = None
                 return Response({'status': 'failed request', 'message': 'Plan id not found.'}, status=status.HTTP_404_NOT_FOUND)
             serializer.save(user=user, electricity_plan=electricity_plan)
+
             # generate electricity pin for the selected plan
             electricity_pin = models.Electricity_Pin()
             electricity_pin.pin = self.generate_pin()
             electricity_pin.user = user
             electricity_pin.electricity_plan = electricity_plan
             electricity_pin.is_valid = True
+            electricity_pin.number_of_units = number_of_units
+            electricity_pin.save()
+            # append the plan to the list of paid plans of the user
+            paid_plans = models.Paid_plan.objects.create(electricity_plan=electricity_plan, user=user)  
+            return Response({
+                'status': 'success',
+                'data': {
+                    'user': {
+                        'id': user.id,
+                        'first_name': user.first_name,
+                        'last_name': user.last_name,
+                        'username': user.username,
+                        'email': user.email
+                    },
+                    'phone_number': phone_number,
+                    'address': address,
+                    'meter_id': meter_id,
+                    'electricity_pin': electricity_pin.pin,
+                    'number_of_units': number_of_units,
+                    'validity_period': f'{number_of_units * 2} days',
+                    'price': price
+                }}, status=status.HTTP_200_OK)
+        return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
