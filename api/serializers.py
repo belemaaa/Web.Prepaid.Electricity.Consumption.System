@@ -26,10 +26,9 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
             'id',
             'name',
             'description',
-            'number_of_unity',
+            'number_of_units',
             'price'
         ]
-
 # class ProfileSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = models.User
@@ -40,18 +39,19 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
 #             'email',
 #             'phone_number'
 #         ]
-
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Payment
         fields = [
+            'user',
             'card_holder_name',
             'card_number',
-            'card_date',
+            'card_expiry_date',
             'cvv',
-            'user'
+            'address',
+            'phone_number',
+            'meter_id'
         ]
-
 class PaidPlanSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     electricity_plan = serializers.SerializerMethodField()
@@ -75,7 +75,6 @@ class PaidPlanSerializer(serializers.ModelSerializer):
             'number_of_units': obj.electricity_plan.number_of_units,
             'price': obj.electricity_plan.price,
         }
-
 class ConsumptionReaderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ConsumptionReader
