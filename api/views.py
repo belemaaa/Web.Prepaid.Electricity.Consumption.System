@@ -104,6 +104,8 @@ class Electricity_Plan(APIView):
         queryset = models.Electricity_Plan.objects.all()
         serializer = serializers.Electricity_plan_serializer(queryset, many=True)
         return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+    def delete(self, request, plan_id):
+        electricity_plan = models.Electricity_Plan.objects.get(id=plan_id)
 
 class Payment(APIView):
     authentication_classes = [TokenAuthentication]

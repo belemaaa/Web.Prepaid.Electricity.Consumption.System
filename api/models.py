@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import timedelta, timezone
+from datetime import timedelta, timezone, datetime
 
 
 class User(AbstractUser):
@@ -26,7 +26,7 @@ class Electricity_Pin(models.Model):
     pin = models.CharField(max_length=15)
     number_of_units = models.CharField(max_length=365, null=True, blank=True)
     is_valid = models.BooleanField(default=False)
-    expiration_date = models.DateTimeField()
+    expiration_date = models.DateTimeField(default=datetime.now() + timedelta(days=7))
 
 class ConsumptionReader(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
