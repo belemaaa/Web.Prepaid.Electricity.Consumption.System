@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from datetime import timedelta, timezone, datetime
+from datetime import timedelta, datetime
+from django.utils import timezone
 
 
 class User(AbstractUser):
@@ -65,7 +66,7 @@ class Payment(models.Model):
     electricity_plan = models.ForeignKey(Electricity_Plan, on_delete=models.CASCADE)
     card_holder_name = models.CharField(max_length=255)
     card_number = models.CharField(max_length=16)
-    card_expiry_date = models.DateField()
+    card_expiry_date = models.CharField(max_length=10)
     cvv = models.CharField(max_length=3)
     address = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=True, blank=True)

@@ -11,7 +11,8 @@ from .permissions import IsAdminUserOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 import json
 import random
-from datetime import timedelta, timezone
+from datetime import timedelta
+from django.utils import timezone
 
 class Signup(APIView):
     authentication_classes = []
@@ -113,6 +114,7 @@ class Payment(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def generate_pin(self, validity_days):
+        validity_days = int(validity_days)
         expiration_date = timezone.now() + timedelta(days=validity_days)
         pin = str(random.randint(100000000000000, 999999999999999))
         return pin, expiration_date
@@ -164,7 +166,7 @@ class Payment(APIView):
                     'electricity_pin': electricity_pin.pin,
                     'number_of_units': number_of_units,
                     'validity_period': f'{number_of_units * 2} days',
-                    'price': price
+                    'price': f'N{price}'
                 }}, status=status.HTTP_200_OK)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -173,15 +175,18 @@ class Retrieve_Paid_Plans(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         user=request.user
-        queryset = models.Paid_plan.objects.get(user=user)
+        queryset = models.Paid_plan.objects.filter(user=user)
         serializer = serializers.PaidPlanSerializer(queryset, many=True)
         return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
     
 class Consumption_Reader(APIView):
-    authentication_classes = []
-    permission_classes = []
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user
+        # Check if the user is authenticated
+        if not user.is_authenticated:
+            return Response({'status': 'error', 'message': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         consumption_reader, created = models.ConsumptionReader.objects.get_or_create(user=user)
         consumption_reader.update_consumption_data()
         serializer = serializers.ConsumptionReaderSerializer(consumption_reader)

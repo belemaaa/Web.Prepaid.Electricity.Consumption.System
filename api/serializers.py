@@ -29,17 +29,8 @@ class Electricity_plan_serializer(serializers.ModelSerializer):
             'number_of_units',
             'price'
         ]
-# class ProfileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = models.User
-#         fields = [
-#             'first_name',
-#             'last_name',
-#             'username',
-#             'email',
-#             'phone_number'
-#         ]
 class PaymentSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     class Meta:
         model = models.Payment
         fields = [
@@ -52,6 +43,14 @@ class PaymentSerializer(serializers.ModelSerializer):
             'phone_number',
             'meter_id'
         ]
+    def get_user(self, obj):
+        return {
+            "id": obj.id,
+            "first_name": obj.first_name,
+            "last_name": obj.last_name,
+            "username": obj.username,
+            "email": obj.email
+        }
 class PaidPlanSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()
     electricity_plan = serializers.SerializerMethodField()
@@ -60,14 +59,7 @@ class PaidPlanSerializer(serializers.ModelSerializer):
         fields = ['user', 'electricity_plan']
 
     def get_user(self, obj):
-        return {
-            'id': obj.id,
-            'first_name': obj.first_name,
-            'last_name': obj.last_name,
-            'username': obj.username,
-            'email': obj.email,
-            'phone_number': obj.phone_number
-        }
+        return obj.user.id
     def get_electricity_plan(self, obj):
         return {
             'name': obj.electricity_plan.name,
@@ -76,9 +68,12 @@ class PaidPlanSerializer(serializers.ModelSerializer):
             'price': obj.electricity_plan.price,
         }
 class ConsumptionReaderSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
     class Meta:
         model = models.ConsumptionReader
         fields = ['user', 'remaining_validity_days', 'percentage_consumed']
+    def get_user(self, obj):
+        return obj.user.id
 
 
 
