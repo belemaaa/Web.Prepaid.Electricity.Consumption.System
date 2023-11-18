@@ -31,8 +31,8 @@ class Electricity_Pin(models.Model):
 
 class ConsumptionReader(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    remaining_validity_days = models.IntegerField()
-    percentage_consumed = models.FloatField()
+    remaining_validity_days = models.IntegerField(null=True,blank=True)
+    percentage_consumed = models.FloatField(null=True, blank=True)
 
     def update_consumption_data(self):
         # get all active electricity plans for the user
@@ -48,7 +48,7 @@ class ConsumptionReader(models.Model):
         ).values_list('expiration_date', flat=True), default=timezone.now())
         self.remaining_validity_days = max((min_expiration_date - timezone.now()).days, 0)
         # calculate total and consumed units
-        total_units = sum(active_plans)
+        total_units = sum([int(value) for value in active_plans])
         consumed_units = Electricity_Pin.objects.filter(
             user=self.user,
             is_valid=True
