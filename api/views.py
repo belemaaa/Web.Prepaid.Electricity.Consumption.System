@@ -184,7 +184,6 @@ class Consumption_Reader(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user
-        # Check if the user is authenticated
         if not user.is_authenticated:
             return Response({'status': 'error', 'message': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
         consumption_reader, created = models.ConsumptionReader.objects.get_or_create(user=user)
