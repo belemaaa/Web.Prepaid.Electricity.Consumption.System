@@ -70,7 +70,7 @@ class Profile(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def get(self, request):
-        user = models.User.objects.get(user=request.user)
+        user = request.user
         return Response({
             'status': 'success',
             'data': {
