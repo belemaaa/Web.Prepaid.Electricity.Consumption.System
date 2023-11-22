@@ -19,6 +19,27 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
+class ProfileSerializer(serializers.Serializer):
+    user = serializers.SerializerMethodField()
+    class Meta:
+        model = models.User
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'phone_number'
+        ]
+    def get_user(self, obj):
+        return {
+            "id": obj.id,
+            "first_name": obj.first_name,
+            "last_name": obj.last_name,
+            "username": obj.username,
+            "email": obj.email
+        }
+    
 class Electricity_plan_serializer(serializers.ModelSerializer):
     class Meta:
         model = models.Electricity_Plan

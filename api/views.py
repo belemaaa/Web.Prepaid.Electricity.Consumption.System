@@ -71,15 +71,8 @@ class Profile(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
         user = request.user
-        return Response({
-            'status': 'success',
-            'data': {
-                'first_name': user.first_name,
-                'last_name': user.last_name,
-                'username': user.username,
-                'email': user.email,
-                'phone_number': user.phone_number
-            }}, status=status.HTTP_200_OK)
+        serializer = serializers.ProfileSerializer(user, many=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class Electricity_Plan(APIView):
     authentication_classes = [TokenAuthentication]
@@ -112,7 +105,7 @@ class Get_Electricity_Plans(APIView):
     def get(self, request):
         queryset = models.Electricity_Plan.objects.all()
         serializer = serializers.Electricity_plan_serializer(queryset, many=True)
-        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class Payment(APIView):
     authentication_classes = [TokenAuthentication]
