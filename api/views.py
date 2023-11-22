@@ -101,15 +101,19 @@ class Electricity_Plan(APIView):
             electricity_plan.save()
             return Response({'status': 'success', 'message': 'new electricity plan has been created'}, status=status.HTTP_201_CREATED)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    def get(self, request):
-        queryset = models.Electricity_Plan.objects.all()
-        serializer = serializers.Electricity_plan_serializer(queryset, many=True)
-        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
     def delete(self, request, plan_id):
         electricity_plan = models.Electricity_Plan.objects.get(id=plan_id)
         electricity_plan.delete()
         return Response({'status': 'success', 'message': 'resource has been deleted'}, status=status.HTTP_200_OK)
 
+class Get_Electricity_Plans(APIView):
+    authentication_classes = []
+    permission_classes = []
+    def get(self, request):
+        queryset = models.Electricity_Plan.objects.all()
+        serializer = serializers.Electricity_plan_serializer(queryset, many=True)
+        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+    
 class Payment(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
