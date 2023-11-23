@@ -73,14 +73,10 @@ class PaymentSerializer(serializers.ModelSerializer):
             "email": obj.email
         }
 class PaidPlanSerializer(serializers.ModelSerializer):
-    user = serializers.SerializerMethodField()
     electricity_plan = serializers.SerializerMethodField()
     class Meta:
         model = models.Paid_plan
-        fields = ['user', 'electricity_plan']
-
-    def get_user(self, obj):
-        return obj.user.id
+        fields = ['electricity_plan']
     def get_electricity_plan(self, obj):
         return {
             'name': obj.electricity_plan.name,

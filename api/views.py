@@ -174,7 +174,7 @@ class Retrieve_Paid_Plans(APIView):
         user=request.user
         queryset = models.Paid_plan.objects.filter(user=user)
         serializer = serializers.PaidPlanSerializer(queryset, many=True)
-        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
 class Consumption_Reader(APIView):
     authentication_classes = [TokenAuthentication]
