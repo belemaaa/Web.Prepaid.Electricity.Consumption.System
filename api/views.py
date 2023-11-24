@@ -148,23 +148,14 @@ class Payment(APIView):
             # append the plan to the list of paid plans of the user
             paid_plans = models.Paid_plan.objects.create(electricity_plan=electricity_plan, user=user)  
             return Response({
-                'status': 'success',
-                'data': {
-                    'user': {
-                        'id': user.id,
-                        'first_name': user.first_name,
-                        'last_name': user.last_name,
-                        'username': user.username,
-                        'email': user.email
-                    },
-                    'phone_number': phone_number,
-                    'address': address,
-                    'meter_id': meter_id,
-                    'electricity_pin': electricity_pin.pin,
-                    'number_of_units': number_of_units,
-                    'validity_period': f'{number_of_units * 2} days',
-                    'price': f'N{price}'
-                }}, status=status.HTTP_200_OK)
+                'phone_number': phone_number,
+                'address': address,
+                'meter_id': meter_id,
+                'electricity_pin': electricity_pin.pin,
+                'number_of_units': number_of_units,
+                'validity_period': f'{number_of_units * 2} days',
+                'price': f'N{price}'
+                }, status=status.HTTP_200_OK)
         return Response({'status': 'failed request', 'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 class Retrieve_Paid_Plans(APIView):
