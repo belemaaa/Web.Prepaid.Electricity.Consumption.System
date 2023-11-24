@@ -40,22 +40,20 @@ class ConsumptionReader(models.Model):
             user=self.user,
             is_valid=True,
             expiration_date__gte=timezone.now()
-        ).values_list('electricity_plan__number_of_units', flat=True)
+        )
         # calculate remaining validity days
-        min_expiration_date = min(Electricity_Pin.objects.filter(
-            user=self.user,
-            is_valid=True
-        ).values_list('expiration_date', flat=True), default=timezone.now())
+        min_expiration_date = min(active_plans.values_list('expiration_date', flat=True), default=timezone.now())
         self.remaining_validity_days = max((min_expiration_date - timezone.now()).days, 0)
-        # calculate total and consumed units
-        total_units = sum([int(value) for value in active_plans])
-        consumed_units = Electricity_Pin.objects.filter(
-            user=self.user,
-            is_valid=True
-        ).aggregate(models.Sum('number_of_units'))['number_of_units__sum'] or 0
+        # calculate total and consumed units, considering validity periods
+        total_units = 0
+        consumed_units = 0
+        for plan in active_plans:
+            total_units += int(plan.electricity_plan.number_of_units)
+            consumed_units += int(plan.number_of_units)
         # calculate percentage consumed
         self.percentage_consumed = (consumed_units / total_units) * 100 if total_units > 0 else 0
         self.save()
+
 
 class Paid_plan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -186,4 +186,4 @@ class Consumption_Reader(APIView):
         consumption_reader, created = models.ConsumptionReader.objects.get_or_create(user=user)
         consumption_reader.update_consumption_data()
         serializer = serializers.ConsumptionReaderSerializer(consumption_reader)
-        return Response({'status': 'success', 'data': serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.data, status=status.HTTP_200_OK)
