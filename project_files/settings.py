@@ -79,10 +79,10 @@ WSGI_APPLICATION = 'project_files.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'mysql.connector.django',
         'NAME': 'group_5_wpecs',
         'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PORT': '3307',
         'USER': 'root',
         'PASSWORD': '',
     }
